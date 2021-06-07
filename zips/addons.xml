@@ -18,7 +18,7 @@
     </extension>
 </addon>
 
-<addon id="repository.choehn" name="Repository Choehn" version="1.0.0" provider-name="Choehn">
+<addon id="repository.choehn" name="Choehn Repo" version="1.0.1" provider-name="Choehn">
     <extension point="xbmc.addon.repository" name="Example Repository">
         <dir>
             <info compressed="false">https://raw.githubusercontent.com/taikhoanonlinevn/repository.choehn/master/zips/addons.xml</info>
@@ -27,8 +27,8 @@
         </dir>
     </extension>
     <extension point="xbmc.addon.metadata">
-        <summary>RS Choehn</summary>
-        <description>DESCRIPTION OF YOUR REPO HERE</description>
+        <summary>Repository Choehn</summary>
+        <description>Choehn</description>
         <disclaimer></disclaimer>
         <platform>all</platform>
         <assets>
