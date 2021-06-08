@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
-<addon id="plugin.video.fvideo" version="6.0.4" name="FVideo" provider-name="Choe">
+<addon id="plugin.video.fvideo" version="6.0.4" name="FVideo" provider-name="Choehn">
 <requires>
   <import addon="xbmc.python" version="3.0.0"/>
 </requires>
