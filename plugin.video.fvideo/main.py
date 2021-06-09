@@ -1,6 +1,6 @@
 # Module: main
 # Author: Choehn
-# Created on: 7 - 5 - 2021
+# Created on: 7 - 6 - 2021
 """
 Example video plugin that is compatible with Kodi 19.x "Matrix" and above
 """
@@ -11,6 +11,7 @@ from urllib.parse import urlencode, parse_qsl
 import xbmcgui
 import xbmcplugin
 import xbmcaddon
+import fshareapi
 
 if hasattr(sys.modules["__main__"], "xbmc"):
     xbmc = sys.modules["__main__"].xbmc
@@ -27,6 +28,9 @@ __language__ = __settings__.getLocalizedString
 home = __settings__.getAddonInfo('path')
 searchnum = __settings__.getSetting('search_num')
 sharinglist = __settings__.getSetting('sharinglist')
+
+fuser = fshareapi.login_api('FVideo-5ENIJN', 'taikhoanonlinevn@gmail.com' ,'lht2468', 'dMnqMMZMUnN5YpvKENaEhdQQ5jxDqddt')
+# print('download_api main : ', fuser['token'])
 
 # Danh sach phim
 VIDEOS = {'Hanh dong': [{'name': 'Phim 1',
@@ -141,12 +145,25 @@ def getFromfile(name):
         pass
 
 
+def getFshareDowloadUrl(url):
+    download_info = {
+        'data_url': url,
+        'password': 'lht2468',
+        'token': fuser['token'],
+        'user_agent': 'FVideo-5ENIJN',
+        'cookie': fuser['session_id']
+    }
+    ret = fshareapi.download_api(download_info['data_url'], download_info['password'], download_info['token'], download_info['user_agent'], download_info['cookie'])
+    print('ret: ', ret)
+    return ret['location']
+
 def Idfilm():
     sinput = getUserInput('Film ID', '')
-    href = 'https://www.fshare.vn/file/' + sinput
-    url = get_url(action='play', video=href)
-    addDir(href, url)
-    addLink(href, url)
+    if sinput is not None:
+        href = 'https://www.fshare.vn/file/' + sinput
+        url = get_url(action='play', video=href)
+        addDir(href, url)
+        addLink(href, url)
 
 
 def get_categories():
@@ -212,7 +229,7 @@ def play_video(path):
     :type path: str
     """
     # Create a playable item with a path to play.
-    play_item = xbmcgui.ListItem(path=path)
+    play_item = xbmcgui.ListItem(path=getFshareDowloadUrl(path))
     # Pass the item to the Kodi player.
     xbmcplugin.setResolvedUrl(_HANDLE, True, listitem=play_item)
 
