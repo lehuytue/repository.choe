@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <addons>
-<addon id="plugin.video.fvideo" version="6.0.7" name="FVideo" provider-name="Choehn">
+<addon id="plugin.video.fvideo" version="6.0.8" name="FVideo" provider-name="Choehn">
 <requires>
   <import addon="xbmc.python" version="3.0.0"/>
+  <import addon="script.module.requests" version="2.22.0" />
+  <import addon="script.module.simplejson" version="3.16.1" />
 </requires>
 <extension point="xbmc.python.pluginsource" library="main.py">
   <provides>video</provides>
