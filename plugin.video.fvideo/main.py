@@ -10,6 +10,7 @@ import sys
 from urllib.parse import urlencode, parse_qsl
 import xbmcgui
 import xbmcplugin
+import xbmcaddon
 
 if hasattr(sys.modules["__main__"], "xbmc"):
     xbmc = sys.modules["__main__"].xbmc
@@ -20,6 +21,12 @@ else:
 _URL = sys.argv[0]
 # Get the plugin handle as an integer number.
 _HANDLE = int(sys.argv[1])
+
+__settings__ = xbmcaddon.Addon(id='plugin.video.fvideo')
+__language__ = __settings__.getLocalizedString
+home = __settings__.getAddonInfo('path')
+searchnum = __settings__.getSetting('search_num')
+sharinglist = __settings__.getSetting('sharinglist')
 
 # Danh sach phim
 VIDEOS = {'Hanh dong': [{'name': 'Phim 1',
@@ -65,6 +72,8 @@ def addDir(name, url):
     is_folder = True
     # Add our item to the Kodi virtual folder listing.
     xbmcplugin.addDirectoryItem(_HANDLE, url, list_item, is_folder)
+    # 1: Info; 2: Warning; 3: Error
+    xbmc.log(url, 1)
 
 
 def addLink(name, url):
@@ -85,6 +94,8 @@ def addLink(name, url):
     is_folder = False
     # Add our item to the Kodi virtual folder listing.
     xbmcplugin.addDirectoryItem(_HANDLE, url, list_item, is_folder)
+    # 1: Info; 2: Warning; 3: Error
+    xbmc.log(url, 1)
 
 
 def get_url(**kwargs):
@@ -96,6 +107,38 @@ def get_url(**kwargs):
     :rtype: str
     """
     return '{}?{}'.format(_URL, urlencode(kwargs))
+
+
+def sharingTogether():
+    list = sharinglist.split(",")
+    for item in list:
+        name = item.strip()
+        url = get_url(action='getFromfile', filename=name)
+        addDir(name, url)
+
+
+def getFromfile(name):
+    try:
+        # 1: Info; 2: Warning; 3: Error
+        xbmc.log('Tuelh: ' + xbmc.translatePath(__settings__.getAddonInfo('profile')) + name, 1)
+        file = open(xbmc.translatePath(__settings__.getAddonInfo('profile')) + name, 'r')
+        # file = open(url,'r')
+        for line in file.readlines():
+            try:
+                list = line.split("##")
+                href = list[1].strip()
+                name = list[0].encode("utf-8")
+                if href.find('fshare.vn/file') > 0:
+                    addLink(name, get_url(action='play', video=href))
+                elif href.find('fshare.vn/folder') > 0:
+                    addDir(name, get_url(action='viewFshareFolde', video=href))
+            except:
+                pass
+        file.close()
+    except:
+        dialog = xbmcgui.Dialog()
+        ok = dialog.ok('FVideo - message', 'Data not found')
+        pass
 
 
 def get_categories():
@@ -187,6 +230,10 @@ def router(paramstring):
             play_video(params['video'])
         elif params['action'] == 'phimid':
             filmId()
+        elif params['action'] == 'sharingTogether':
+            sharingTogether()
+        elif params['action'] == 'getFromfile':
+            getFromfile(params['filename'])
         else:
             # If the provided paramstring does not contain a supported action
             # we raise an exception. This helps to catch coding errors,
@@ -196,6 +243,7 @@ def router(paramstring):
         url = get_url(action='phimid', category='theoid')
         addDir('Nhap vao ID phim', url)
         list_categories()
+        addDir('Chia se cho nhau', get_url(action='sharingTogether'))
 
 
 def filmId():
