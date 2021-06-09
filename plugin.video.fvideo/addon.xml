@@ -7,13 +7,13 @@
   <provides>video</provides>
 </extension>
 <extension point="xbmc.addon.metadata">
-  <summary lang="en">summary: FVideo</summary>
-  <description lang="en_GB">description: FVideo</description>
-  <disclaimer lang="en_GB">disclaimer: Free sample videos are provided by FShare</disclaimer>
+  <summary lang="en">Xem video tu Fshare</summary>
+  <description lang="en_GB">Xem video tu Fshare</description>
+  <disclaimer lang="en_GB">Noi dung tu FShare</disclaimer>
   <assets>
     <icon>icon.png</icon>
     <fanart>fanart.jpg</fanart>  
   </assets>
-  <news>news: Updated with latest artwork metadata</news>
+  <news>Can co tai khoan Fshare</news>
 </extension>
 </addon>
