@@ -1,7 +1,6 @@
 <settings>
    <setting id="username" type="text" label="Tai khoan" />
    <setting id="password" type="text" option="hidden" label="Mat khau" />
-   <setting id="activedowload" type="text" label="Activate direct download(0/1)" default="0" />
    <setting id="sharinglist" type="text" label="Sharing list" default="thuynga.fvideo,asia.fvideo,VanSon.fvideo,DuyQuang.fvideo,Xuan.fvideo,DuyenDangVietNam.fvideo,007.fvideo,ChungTuDon.fvideo,LyLienKiet.fvideo,ThanhLong.fvideo" />
    <setting id="search_num" type="text" label="Search Number" default="50" />
 </settings>
