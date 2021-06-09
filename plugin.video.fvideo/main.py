@@ -120,7 +120,7 @@ def sharingTogether():
 def getFromfile(name):
     try:
         # 1: Info; 2: Warning; 3: Error
-        xbmc.log('Tuelh: ' + xbmc.translatePath(__settings__.getAddonInfo('profile')) + name, 1)
+        xbmc.log('FVideo resourcefilepath: ' + xbmc.translatePath(__settings__.getAddonInfo('profile')) + name, 1)
         file = open(xbmc.translatePath(__settings__.getAddonInfo('profile')) + name, 'r')
         # file = open(url,'r')
         for line in file.readlines():
@@ -139,6 +139,14 @@ def getFromfile(name):
         dialog = xbmcgui.Dialog()
         ok = dialog.ok('FVideo - message', 'Data not found')
         pass
+
+
+def Idfilm():
+    sinput = getUserInput('Film ID', '')
+    href = 'https://www.fshare.vn/file/' + sinput
+    url = get_url(action='play', video=href)
+    addDir(href, url)
+    addLink(href, url)
 
 
 def get_categories():
@@ -228,30 +236,17 @@ def router(paramstring):
         elif params['action'] == 'play':
             # Play a video from a provided URL.
             play_video(params['video'])
-        elif params['action'] == 'phimid':
-            filmId()
+        elif params['action'] == 'Idfilm':
+            Idfilm()
         elif params['action'] == 'sharingTogether':
             sharingTogether()
         elif params['action'] == 'getFromfile':
             getFromfile(params['filename'])
         else:
-            # If the provided paramstring does not contain a supported action
-            # we raise an exception. This helps to catch coding errors,
-            # e.g. typos in action names.
             raise ValueError('Invalid paramstring: {}!'.format(paramstring))
     else:
-        url = get_url(action='phimid', category='theoid')
-        addDir('Nhap vao ID phim', url)
-        list_categories()
+        addDir('Xem theo ID (Vi du: KIMSN1RFJ7)', get_url(action='Idfilm'))
         addDir('Chia se cho nhau', get_url(action='sharingTogether'))
-
-
-def filmId():
-    sinput = getUserInput('Film ID', '')
-    href = 'https://www.fshare.vn/file/' + sinput
-    url = get_url(action='play', video=href)
-    addDir(href, url)
-    addLink(href, url)
 
 
 if __name__ == '__main__':
