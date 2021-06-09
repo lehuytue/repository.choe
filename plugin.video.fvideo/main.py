@@ -12,6 +12,7 @@ import xbmcgui
 import xbmcplugin
 import xbmcaddon
 import fshareapi
+import thuvienhd
 
 if hasattr(sys.modules["__main__"], "xbmc"):
     xbmc = sys.modules["__main__"].xbmc
