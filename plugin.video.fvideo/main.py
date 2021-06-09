@@ -28,8 +28,9 @@ __language__ = __settings__.getLocalizedString
 home = __settings__.getAddonInfo('path')
 searchnum = __settings__.getSetting('search_num')
 sharinglist = __settings__.getSetting('sharinglist')
+fuseragent = __settings__.getSetting('fuseragent')
 
-fuser = fshareapi.login_api('FVideo-5ENIJN', 'taikhoanonlinevn@gmail.com' ,'lht2468', 'dMnqMMZMUnN5YpvKENaEhdQQ5jxDqddt')
+fuser = fshareapi.login_api('FVideo-5ENIJN', __settings__.getSetting('username'),__settings__.getSetting('password'), __settings__.getSetting('fappkey'))
 # print('download_api main : ', fuser['token'])
 
 # Danh sach phim
@@ -150,7 +151,7 @@ def getFshareDowloadUrl(url):
         'data_url': url,
         'password': 'lht2468',
         'token': fuser['token'],
-        'user_agent': 'FVideo-5ENIJN',
+        'user_agent': fuseragent,
         'cookie': fuser['session_id']
     }
     ret = fshareapi.download_api(download_info['data_url'], download_info['password'], download_info['token'], download_info['user_agent'], download_info['cookie'])
@@ -158,7 +159,7 @@ def getFshareDowloadUrl(url):
     return ret['location']
 
 def Idfilm():
-    sinput = getUserInput('Film ID', '')
+    sinput = getUserInput('Film ID', '1H2KCTR2SHS7E57')
     if sinput is not None:
         href = 'https://www.fshare.vn/file/' + sinput
         url = get_url(action='play', video=href)
