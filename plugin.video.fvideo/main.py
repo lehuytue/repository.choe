@@ -31,7 +31,8 @@ searchnum = __settings__.getSetting('search_num')
 sharinglist = __settings__.getSetting('sharinglist')
 fuseragent = __settings__.getSetting('fuseragent')
 
-fuser = fshareapi.login_api('FVideo-5ENIJN', __settings__.getSetting('username'),__settings__.getSetting('password'), __settings__.getSetting('fappkey'))
+fuser = fshareapi.login_api('FVideo-5ENIJN', __settings__.getSetting('username'), __settings__.getSetting('password'),
+                            __settings__.getSetting('fappkey'))
 # print('download_api main : ', fuser['token'])
 
 # Danh sach phim
@@ -66,14 +67,14 @@ def getUserInput(title=u"Input", default=u"", hidden=False):
     return result
 
 
-def addDir(name, url):
+def addDir(lable, title, genre, thumb, fanart, icon, url):
     # Create a list item with a text label and a thumbnail image.
-    list_item = xbmcgui.ListItem(label=name)
-    list_item.setArt({'thumb': '',
-                      'icon': '',
-                      'fanart': ''})
-    list_item.setInfo('video', {'title': name,
-                                'genre': '',
+    list_item = xbmcgui.ListItem(label=lable)
+    list_item.setArt({'thumb': thumb,
+                      'icon': icon,
+                      'fanart': fanart})
+    list_item.setInfo('video', {'title': title,
+                                'genre': genre,
                                 'mediatype': 'video'})
     is_folder = True
     # Add our item to the Kodi virtual folder listing.
@@ -82,18 +83,21 @@ def addDir(name, url):
     xbmc.log(url, 1)
 
 
-def addLink(name, url):
+def addLink(lable, title, genre, thumb, fanart, icon, url):
     # Create a list item with a text label and a thumbnail image.
-    list_item = xbmcgui.ListItem(label=name)
+    list_item = xbmcgui.ListItem(label=lable)
     # Set additional info for the list item.
     # 'mediatype' is needed for skin to display info for this ListItem correctly.
-    list_item.setInfo('video', {'title': name,
-                                'genre': '',
+    list_item.setInfo('video', {'title': title,
+                                'genre': genre,
                                 'mediatype': 'video'})
     # Set graphics (thumbnail, fanart, banner, poster, landscape etc.) for the list item.
     # Here we use the same image for all items for simplicity's sake.
     # In a real-life plugin you need to set each image accordingly.
-    list_item.setArt({'thumb': '', 'icon': '', 'fanart': ''})
+    list_item.setArt({'thumb': thumb
+                         , 'icon': icon
+                         , 'fanart': fanart}
+                     )
     # Set 'IsPlayable' property to 'true'.
     # This is mandatory for playable items!
     list_item.setProperty('IsPlayable', 'true')
@@ -120,7 +124,8 @@ def sharingTogether():
     for item in list:
         name = item.strip()
         url = get_url(action='getFromfile', filename=name)
-        addDir(name, url)
+        # addDir(lable, title, genre, thumb, fanart, icon, url)
+        addDir(name, name, '', '', '', '', url)
 
 
 def getFromfile(name):
@@ -137,7 +142,8 @@ def getFromfile(name):
                 if href.find('fshare.vn/file') > 0:
                     addLink(name, get_url(action='play', video=href))
                 elif href.find('fshare.vn/folder') > 0:
-                    addDir(name, get_url(action='viewFshareFolde', video=href))
+                    # addDir(lable, title, genre, thumb, fanart, icon, url)
+                    addDir(name, name, '', '', '', '', get_url(action='viewFshareFolde', video=href))
             except:
                 pass
         file.close()
@@ -155,17 +161,19 @@ def getFshareDowloadUrl(url):
         'user_agent': fuseragent,
         'cookie': fuser['session_id']
     }
-    ret = fshareapi.download_api(download_info['data_url'], download_info['password'], download_info['token'], download_info['user_agent'], download_info['cookie'])
+    ret = fshareapi.download_api(download_info['data_url'], download_info['password'], download_info['token'],
+                                 download_info['user_agent'], download_info['cookie'])
     print('ret: ', ret)
     return ret['location']
+
 
 def Idfilm():
     sinput = getUserInput('Film ID', '1H2KCTR2SHS7E57')
     if sinput is not None:
         href = 'https://www.fshare.vn/file/' + sinput
         url = get_url(action='play', video=href)
-        addDir(href, url)
-        addLink(href, url)
+        # addLink(lable, title, genre, thumb, fanart, icon, url)
+        addLink(href, href, '', '', '', '', get_url(action='play', video=href))
 
 
 def get_categories():
@@ -210,7 +218,8 @@ def list_categories():
     for category in categories:
         # Example: plugin://plugin.video.example/?action=listing&category=Animals
         url = get_url(action='listing', category=category)
-        addDir(category, url)
+        # addDir(lable, title, genre, thumb, fanart, icon, url)
+        addDir(category, category, '', '', '', '', url)
 
 
 def list_videos(category):
@@ -220,7 +229,41 @@ def list_videos(category):
         # Create a URL for a plugin recursive call.
         # Example: plugin://plugin.video.example/?action=play&video=http://www.vidsplay.com/wp-content/uploads/2017/04/crab.mp4
         url = get_url(action='play', video=video['video'])
-        addLink(video['name'], url)
+        # addLink(lable, title, genre, thumb, fanart, icon, url)
+        addLink(video['name'], video['name'], '', '', '', '', url)
+
+
+def thuvienhd_getall(url):
+    # Get video categories
+    items = thuvienhd.getAll(url)
+    # Iterate through categories
+    for item in items:
+        url = get_url(action='thuvienhdgetdetail', href=item['href'])
+        # addDir(lable, title, genre, thumb, fanart, icon, url)
+        addDir(item['name'], item['name'], '', item['src'], item['src'], '', url)
+
+
+def thuvienhdsearch():
+    sinput = getUserInput(u'Từ khóa', '')
+    if sinput is not None:
+        href = 'https://thuvienhd.com/?s=' + sinput.replace(' ', '+')
+        # Get video categories
+        items = thuvienhd.search(href)
+        # Iterate through categories
+        for item in items:
+            url = get_url(action='thuvienhdgetdetail', href=item['href'])
+            # addDir(lable, title, genre, thumb, fanart, icon, url)
+            addDir(item['name'], item['name'], '', item['src'], item['src'], '', url)
+
+
+def thuvienhdgetdetail(url):
+    # Get video categories
+    items = thuvienhd.getDetail(url)
+    # Iterate through categories
+    for item in items:
+        url = get_url(action='play', video=item['href'])
+        # addDir(lable, title, genre, thumb, fanart, icon, url)
+        addLink(item['name'], item['name'], '', item['src'], item['src'], '', url)
 
 
 def play_video(path):
@@ -261,11 +304,26 @@ def router(paramstring):
             sharingTogether()
         elif params['action'] == 'getFromfile':
             getFromfile(params['filename'])
+        elif params['action'] == 'thuvienhd_getall':
+            thuvienhd_getall(params['url'])
+        elif params['action'] == 'thuvienhdsearch':
+            thuvienhdsearch()
+        elif params['action'] == 'thuvienhdgetdetail':
+            thuvienhdgetdetail(params['href'])
         else:
             raise ValueError('Invalid paramstring: {}!'.format(paramstring))
     else:
-        addDir('Xem theo ID (Vi du: KIMSN1RFJ7)', get_url(action='Idfilm'))
-        addDir('Chia se cho nhau', get_url(action='sharingTogether'))
+        # addDir(lable, title, genre, thumb, fanart, icon, url)
+        addDir('HOT', '', '', '', '', '', get_url(action='thuvienhd_getall', url='https://thuvienhd.com/trending'))
+        addDir(u'Thuyết minh', '', '', '', '', '',
+               get_url(action='thuvienhd_getall', url='https://thuvienhd.com/genre/thuyet-minh-tieng-viet'))
+        addDir(u'Lồng tiếng', '', '', '', '', '',
+               get_url(action='thuvienhd_getall', url='https://thuvienhd.com/genre/long-tieng-tieng-viet'))
+        addDir(u'TVB', '', '', '', '', '', get_url(action='thuvienhd_getall', url='https://thuvienhd.com/genre/tvb'))
+        addDir(u'Mới nhất', '', '', '', '', '', get_url(action='thuvienhd_getall', url='https://thuvienhd.com/recent'))
+        addDir('Xem theo ID (Vi du: KIMSN1RFJ7)', '', '', '', '', '', get_url(action='Idfilm'))
+        addDir(u'Tìm kiếm', '', '', '', '', '', get_url(action='thuvienhdsearch'))
+        # addDir('Chia se cho nhau', get_url(action='sharingTogether'))
 
 
 if __name__ == '__main__':
@@ -273,6 +331,6 @@ if __name__ == '__main__':
     # We use string slicing to trim the leading '?' from the plugin call paramstring
     router(sys.argv[2][1:])
 
-xbmcplugin.addSortMethod(_HANDLE, xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
+# xbmcplugin.addSortMethod(_HANDLE, xbmcplugin.SORT_METHOD_LABEL_IGNORE_THE)
 # Finish creating a virtual folder.
 xbmcplugin.endOfDirectory(_HANDLE)
